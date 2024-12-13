@@ -20,6 +20,7 @@ func NewServer(addr string, sender chan<- []byte) *Server {
 }
 
 func (s *Server) Start() error {
+	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.POST("/send", s.send)
