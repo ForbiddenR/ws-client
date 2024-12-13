@@ -1,7 +1,6 @@
 package hserver
 
 import (
-	"bytes"
 	"io"
 	"net/http"
 
@@ -28,9 +27,11 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) send(c *gin.Context) {
-	var d []byte
-	result := bytes.NewBuffer(d)
-	io.Copy(result, c.Request.Body)
-	s.sender <- result.Bytes()
+	result, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	s.sender <- result
 	c.String(http.StatusOK, "Ok")
 }
