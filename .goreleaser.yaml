@@ -1,0 +1,21 @@
+project_name: &name ws-client
+
+version: 2
+
+builds:
+  - id: universal
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
+    main: ./cmd
+    binary: *name
+
+archives:
+  - name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+    format: zip
