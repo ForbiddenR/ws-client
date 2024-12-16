@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	config string
+	config  string
 )
 
 type runConfig struct {
@@ -20,9 +20,9 @@ type runConfig struct {
 	CertPath string `yaml:"cert_path"`
 	KeyPath  string `yaml:"key_path"`
 	CaPath   string `yaml:"ca_path"`
-	MTLS     bool   `yaml:"mtls"`
 	HttpPort string `yaml:"http_port"`
 	SN       string `yaml:"sn"`
+	MTLS     bool   `yaml:"mtls"`
 }
 
 func newRunConfig() *runConfig {
