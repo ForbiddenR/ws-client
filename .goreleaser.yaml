@@ -7,7 +7,7 @@ builds:
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -X github.com/ForbiddenR/ws-client/cmd.Version={{.Version}}
+      - -X main.Version={{.Version}}
       - -s
       - -w
     goos:
