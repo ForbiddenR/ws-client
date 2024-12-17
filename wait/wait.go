@@ -1,16 +1,20 @@
 package wait
 
-import "golang.org/x/sync/errgroup"
+import (
+	"context"
+
+	"golang.org/x/sync/errgroup"
+)
 
 type Starter interface {
-	Start() error
+	Start(context.Context) error
 }
 
 func Start(starts ...Starter) error {
-	eg := errgroup.Group{}
+	eg, errCtx := errgroup.WithContext(context.Background())
 	for _, v := range starts {
 		eg.Go(func() error {
-			return v.Start()
+			return v.Start(errCtx)
 		})
 	}
 	return eg.Wait()

@@ -1,6 +1,7 @@
 package hserver
 
 import (
+	"context"
 	"io"
 	"net/http"
 
@@ -19,12 +20,16 @@ func NewServer(addr string, sender chan<- []byte) *Server {
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(ctx context.Context) error {
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.POST("/send", s.send)
-	return engine.Run(s.addr)
+	go func() {
+		engine.Run(s.addr)
+	}()
+	<-ctx.Done()
+	return ctx.Err()
 }
 
 func (s *Server) send(c *gin.Context) {

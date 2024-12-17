@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -37,7 +38,7 @@ func NewServer(address, certPath, keyPath, caPath string, mtls bool, sn string, 
 	}
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(ctx context.Context) error {
 	file, err := os.OpenFile("log.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
@@ -96,6 +97,11 @@ func (s *Server) Start() error {
 	eg.Go(func() error {
 		buffer := make([]byte, 10240)
 		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			default:
+			}
 			mt, reader, err := conn.NextReader()
 			if err != nil {
 				return err
@@ -130,10 +136,11 @@ func (s *Server) Start() error {
 				if err != nil {
 					return err
 				}
+			case <-ctx.Done():
+				return ctx.Err()
 			}
 		}
 	})
-
 	return eg.Wait()
 }
 
